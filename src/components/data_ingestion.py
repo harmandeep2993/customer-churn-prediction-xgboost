@@ -1,11 +1,11 @@
-import pandas as pd
 import os
-from src.utils.logger import get_logger
+import pandas as pd
 from src.utils.config_loader import load_config
+from src.utils.logger import get_logger
 
-
+# Define DataIngestion Class
 class DataIngestion:
-    """Handles loading and inspecting raw customer churn data."""
+    """Handles loading and saving customer churn data."""
 
     def __init__(self, config_path: str = "config/config.yaml"):
         self.config = load_config(config_path)
@@ -22,6 +22,12 @@ class DataIngestion:
         self.logger.info(f"Loaded dataset with shape {df.shape}")
         return df
 
+    def save_processed_data(self, df: pd.DataFrame, output_path: str):
+        """Save processed dataset to CSV file."""
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        df.to_csv(output_path, index=False)
+        self.logger.info(f"Processed data saved to {output_path}")
+
     @staticmethod
     def df_overview(df: pd.DataFrame):
         """Print dataset overview: shape, types, and missing values."""
@@ -33,7 +39,6 @@ class DataIngestion:
 
         print("\n=== Missing Values ===")
         print(df.isna().sum().sort_values(ascending=False).head(20))
-
 
 if __name__ == "__main__":
     ingestion = DataIngestion()
