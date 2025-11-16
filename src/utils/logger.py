@@ -2,22 +2,26 @@ import logging
 import os
 
 def get_logger(name: str):
-    """Create and return a configured logger."""
+    """Return a logger that logs to file and console without duplicates."""
     os.makedirs("logs", exist_ok=True)
-
     log_file = os.path.join("logs", "app.log")
-    logging.basicConfig(
-        filename=log_file,
-        level=logging.INFO,
-        format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )
 
-    # Also print logs to console for visibility
-    console = logging.StreamHandler()
-    console.setLevel(logging.INFO)
-    formatter = logging.Formatter("%(asctime)s | %(levelname)s | %(message)s")
-    console.setFormatter(formatter)
-    logging.getLogger("").addHandler(console)
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.INFO)
 
-    return logging.getLogger(name)
+    # Avoid duplicate handlers
+    if not logger.handlers:
+        file_handler = logging.FileHandler(log_file)
+        console_handler = logging.StreamHandler()
+
+        formatter = logging.Formatter(
+            "%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S"
+        )
+        file_handler.setFormatter(formatter)
+        console_handler.setFormatter(formatter)
+
+        logger.addHandler(file_handler)
+        logger.addHandler(console_handler)
+
+    return logger
