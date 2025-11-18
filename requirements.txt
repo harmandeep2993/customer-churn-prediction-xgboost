@@ -7,7 +7,6 @@ seaborn
 ipykernel
 scikit-learn
 xgboost
-lightgbm
 streamlit
 fastapi
 uvicorn
